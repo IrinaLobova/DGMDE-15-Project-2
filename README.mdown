@@ -116,6 +116,12 @@ It is possible to take a screenshot of a running HTML5 video using JavaScript (s
 
 ---
 
+## Area, Bar Chart Examples
+
+In the context of the streamgraph extension, you should find some examples of how to use d3,js,, Processing.js, and the `canvas` tag to draw bar and area charts in the [`examples/`](https://github.com/DGMD-E-15/Project-2/tree/master/examples) directory.
+
+---
+
 ## Questions?
 
 Please file an Issue on this project!  You can read a bit more about GitHub's Issues feature [here](https://github.com/blog/831-issues-2-0-the-next-generation).  If you'd like your question to be private, [email us](mailto:dgmde15@gmail.com); however, if possible, please include a link to relevant code in your own repository if applicable (as opposed to copy-pasting code into an email).
