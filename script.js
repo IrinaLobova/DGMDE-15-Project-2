@@ -50,15 +50,29 @@ function playVideo(e) {
 
 function updateScrubBar(e) {
 	// A function to make the scrubBar follow the mouse
-
 	scrubBar.style.visibility = 'visible';
 	scrubBar.style.left = e.clientX - position(hashtagPlot).x; // e.clientX is the mouse position
-
 	scrubBar.fractionScrubbed = parseInt(scrubBar.style.left, 10)/hashtagPlot.offsetWidth;
 }
 
 function updateVideo(e) {
 	SOTUvideo.currentTime = SOTUvideo.duration * scrubBar.fractionScrubbed;
+}
+////////////////////////////////////////////////////////////////////////////////
+// Handling the visibility of the scrubbar
+SOTUvideo.addEventListener('play', makeScrubVisible, false);
+function makeScrubVisible() {
+    scrubBar.style.visibility = 'visible';
+}
+
+SOTUvideo.addEventListener('ended', hideScrub, false);
+function hideScrub() {
+    scrubBar.style.visibility = 'hidden';
+}
+
+function updateScrubPosition() {
+    scrubBar.fractionScrubbed = SOTUvideo.currentTime / SOTUvideo.duration;
+    scrubBar.style.left = hashtagPlot.offsetWidth * scrubBar.fractionScrubbed;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,6 +80,7 @@ function updateVideo(e) {
 
 function updateTranscript(e) {
 	scrollToTimestamp(nearestStamp(scrubBar.fractionScrubbed));
+	updateScrubPosition();
 }
 
 function scrollToTimestamp(timestamp) {
@@ -84,6 +99,13 @@ function nearestStamp(fractionScrubbed) {
 	return timestamps[timestamps.length - 1];
 }
 
+transcript.addEventListener("mousewheel", updateVideoScrub, false);
+function updateVideoScrub() {
+    scrubBar.fractionScrubbed = transcript.scrollTop / transcript.scrollHeight;
+    updateVideo();
+    updateScrubPosition();
+    makeScrubVisible();
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Adding the nav functionality for the video
@@ -126,6 +148,8 @@ function updatePage() {
 	var dominantHashtag = dominantHashtagAt(SOTUvideo.currentTime);
 	recolorNation(dominantHashtag);
 	updateChart();
+	updateScrubPosition();
+	updateTranscript();
 }
 
 function dominantHashtagAt(time) {
@@ -181,7 +205,7 @@ function UTCtoNearestAvailableIntervalData(UTCdate) {
 	for (var i = 0; i < tweetIntervals.length; i++) {
 		// Tweets are indexed by interval (e.g. 2014-01-29 02:15:::2014-01-29 02:15), and we just want the start of the interval
 		var tweetIntervalStart = new Date(tweetIntervals[i].split(':::')[0]);
-		// As we go through, check if the time we just converted is after the time we're looking fo
+		// As we go through, check if the time we just converted is after the time we're looking for
 		if (UTCdate < tweetIntervalStart) {
 			return tweetValues[tweetIntervals[i-1]];
 		}
