@@ -15,6 +15,8 @@ function extractTimestamps() {
 
 	return timestamps;
 }
+// Previous timestamp object
+var prevTarget = null;
 
 // Initialize these for loading later, after window.onload
 var nation = null;
@@ -76,16 +78,28 @@ function updateScrubPosition() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Handling the scrolling transcript
+// Handling the scrolling transcript and highlighting
+
+function do_highlight(target) {
+    if (target !== prevTarget) {
+	prevTarget && prevTarget.classList.toggle("highlight");
+	prevTarget = target;
+    }
+
+    if (!target.classList.contains("highlight")) {
+	//console.log(target);
+	target.classList.toggle("highlight");
+    }
+}
 
 function updateTranscript(e) {
-	scrollToTimestamp(nearestStamp(scrubBar.fractionScrubbed));
-	updateScrubPosition();
+	do_highlight(scrollToTimestamp(nearestStamp(scrubBar.fractionScrubbed)));
 }
 
 function scrollToTimestamp(timestamp) {
 	var target = transcript.querySelector('#transcript-time-' + timestamp);
-	document.getElementById('sotu-transcript').scrollTop = target.offsetTop;
+	transcript.scrollTop = target.offsetTop;
+	return target;
 }
 
 function nearestStamp(fractionScrubbed) {
@@ -143,7 +157,7 @@ window.onload = function () {
 };
 
 // Set up the video so that the chart is updated and the nation recolored every time the time changes
-document.getElementById('sotu-video').addEventListener("timeupdate", updatePage);
+SOTUvideo.addEventListener("timeupdate", updatePage);
 function updatePage() {
 	var dominantHashtag = dominantHashtagAt(SOTUvideo.currentTime);
 	recolorNation(dominantHashtag);
